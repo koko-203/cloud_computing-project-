@@ -16,7 +16,7 @@ import {
 import { db } from "../firebase";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -29,13 +29,13 @@ export default function Dashboard() {
 
   // Fetch todos
   useEffect(() => {
-    if (!user) {
+    if (!currentUser) {
       console.log("No user found");
       return;
     }
     
-    console.log("Current user:", user.uid);
-    const q = query(collection(db, "todos", user.uid, "userTodos"));
+    console.log("Current user:", currentUser.uid);
+    const q = query(collection(db, "todos", currentUser.uid, "userTodos"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log("Snapshot received:", snapshot.size, "documents");
@@ -51,23 +51,23 @@ export default function Dashboard() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [currentUser]);
 
   // Migrate old todos
   useEffect(() => {
     const migrateTodos = async () => {
-      if (!user) return;
+      if (!currentUser) return;
       
       try {
         // Check old location
-        const oldTodosRef = collection(db, "users", user.uid, "todos");
+        const oldTodosRef = collection(db, "users", currentUser.uid, "todos");
         const oldTodosSnapshot = await getDocs(oldTodosRef);
         
         if (!oldTodosSnapshot.empty) {
           console.log("Found old todos, migrating...");
           
           // Create new location
-          const newTodosRef = collection(db, "todos", user.uid, "userTodos");
+          const newTodosRef = collection(db, "todos", currentUser.uid, "userTodos");
           
           // Move each todo
           for (const doc of oldTodosSnapshot.docs) {
@@ -87,14 +87,14 @@ export default function Dashboard() {
     };
     
     migrateTodos();
-  }, [user]);
+  }, [currentUser]);
 
   // Create todo
   const createTodo = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     try {
-      const todoRef = collection(db, "todos", user.uid, "userTodos");
+      const todoRef = collection(db, "todos", currentUser.uid, "userTodos");
       await addDoc(todoRef, {
         text: input,
         completed: false,
@@ -114,7 +114,7 @@ export default function Dashboard() {
   // Toggle complete
   const toggleComplete = async (todo) => {
     try {
-      await updateDoc(doc(db, "todos", user.uid, "userTodos", todo.id), {
+      await updateDoc(doc(db, "todos", currentUser.uid, "userTodos", todo.id), {
         completed: !todo.completed,
       });
     } catch (err) {
@@ -126,7 +126,7 @@ export default function Dashboard() {
   // Delete todo
   const deleteTodo = async (id) => {
     try {
-      await deleteDoc(doc(db, "todos", user.uid, "userTodos", id));
+      await deleteDoc(doc(db, "todos", currentUser.uid, "userTodos", id));
     } catch (err) {
       console.error("Error deleting todo:", err);
       setError("Failed to delete task");
@@ -147,7 +147,7 @@ export default function Dashboard() {
     <div className="min-h-screen w-full p-4 bg-gradient-to-r from-blue-500 to-cyan-400">
       <div className="bg-white max-w-xl w-full mx-auto rounded-md shadow-xl p-4">
         <h2 className="text-2xl font-bold text-center text-gray-800">
-          Welcome, {user?.displayName || user?.email}
+          Welcome, {currentUser?.displayName || currentUser?.email}
         </h2>
         {error && <p className="text-red-500 text-center mt-2 text-sm">{error}</p>}
 
@@ -217,7 +217,7 @@ export default function Dashboard() {
             .filter((todo) =>
               filterPriority === "All" ? true : todo.priority === filterPriority
             )
-            .map((todo, index) => (
+            .map((todo) => (
               <Todo
                 key={todo.id}
                 todo={todo}
