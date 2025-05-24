@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from "react-router-dom";
 import { AiOutlinePlus } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import Todo from "./Todo";
 import {
   query,
@@ -160,6 +161,13 @@ export default function Dashboard() {
           Welcome, {currentUser?.displayName || currentUser?.email}
         </h3>
         {error && <p className="text-red-500 text-center mt-2 text-sm">{error}</p>}
+
+      {/*Update Email or Password */}
+      <div className="text-center mb-4">
+       <Link to="/update-profile" className="text-blue-600 underline text-sm">
+       Update Email or Password
+        </Link>
+        </div>
 
         {/*logout */}
         <div className="text-center mb-4">
