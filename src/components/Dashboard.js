@@ -13,7 +13,16 @@ import {
   deleteDoc,
   getDocs,
 } from "firebase/firestore";
+
 import { db } from "../firebase";
+
+
+const style = {
+  bg: `absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-[#2F80ED] to-[#1CB5E0] flex justify-center items-center p-4`,
+  container: `bg-slate-100 w-full max-w-xl rounded-md shadow-xl p-6`,
+  heading: `text-3xl font-bold text-center text-gray-800 p-2`,
+ 
+};
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -144,14 +153,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen w-full p-4 bg-gradient-to-r from-blue-500 to-cyan-400">
-      <div className="bg-white max-w-xl w-full mx-auto rounded-md shadow-xl p-4">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+   <div className={style.bg}>
+      <div className={style.container}>
+        <h3 className={style.heading}>Todo App</h3>
+        <h3 className="text-xl font-semibold text-center mt-2">
           Welcome, {currentUser?.displayName || currentUser?.email}
-        </h2>
+        </h3>
         {error && <p className="text-red-500 text-center mt-2 text-sm">{error}</p>}
 
-        {/* Logout */}
+        {/*logout */}
         <div className="text-center mb-4">
           <button onClick={handleLogout} className="text-red-600 text-sm underline">
             Log Out
@@ -187,7 +197,8 @@ export default function Dashboard() {
           </button>
         </form>
 
-        {/* Filter/Search */}
+        {/* Filter and search
+        Search */}
         <div className="flex flex-col md:flex-row justify-between gap-2 mb-4">
           <input
             type="text"
