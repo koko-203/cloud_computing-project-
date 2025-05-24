@@ -7,10 +7,10 @@ export default function Signup() {
   const emailRef = useRef()
   const passwordRef = useRef()
   const passwordConfirmRef = useRef()
-  const { signup } = useAuth()
+  const { signup, signInWithGoogle, user } = useAuth()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -54,6 +54,58 @@ export default function Signup() {
               Sign Up
             </Button>
           </Form>
+          <div className="text-center mt-3">
+            <div className="d-flex align-items-center justify-content-center">
+              <div className="border-top flex-grow-1"></div>
+              <span className="px-2 text-muted">or</span>
+              <div className="border-top flex-grow-1"></div>
+            </div>
+          </div>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '20px'
+          }}>
+            {!user ? (
+              <button
+                onClick={signInWithGoogle}
+                style={{
+                  padding: '10px 20px',
+                  fontSize: '16px',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}
+              >
+                <img 
+                  src="/google.jpeg"
+                  alt="Google Logo"
+                  style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+                />
+                Sign up with Google
+              </button>
+            ) : (
+              <div>
+                <p>Welcome, {user.displayName}!</p>
+                <img 
+                  src={user.photoURL}
+                  alt="Profile"
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    marginTop: '10px'
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </Card.Body>
       </Card>
       <div className="w-100 text-center mt-2">
